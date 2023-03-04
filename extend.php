@@ -15,6 +15,7 @@ use Kyrne\Websocket\Api\Controllers\AuthController;
 use Kyrne\Websocket\Api\Controllers\TypingWebsocketController;
 use Kyrne\Websocket\Extend\GenerateApp;
 use Kyrne\Websocket\Provider\AppProvider;
+use Flarum\Extend\User;
 
 return [
     (new Console())
@@ -54,6 +55,9 @@ return [
         ->content(AddStatsData::class),
 
     new Locales(__DIR__.'/resources/locale'),
+
+    (new User())
+        ->registerPreference('disableAutoFresh', 'boolVal', false),
 
     (new Routes('api'))
         ->post('/posts/typing', 'posts.typing', TypingWebsocketController::class)

@@ -4,10 +4,12 @@ import DiscussionList from 'flarum/components/DiscussionList';
 import DiscussionPage from 'flarum/components/DiscussionPage';
 import IndexPage from 'flarum/components/IndexPage';
 
+import addPreferences from './AddPreferences';
 import PresenceChannel from './PresenceChannel';
 import RegisterWidget from '../common/Widget/RegisterWidget';
 
 app.initializers.add('kyrne-websocket', () => {
+  addPreferences();
   const loadPusher = new Promise((resolve, reject) => {
     if (app.socketStatus !== 'connected') {
       $.getScript('https://cdn.jsdelivr.net/npm/pusher-js@7.0.3/dist/web/pusher.min.js', () => {
@@ -62,7 +64,7 @@ app.initializers.add('kyrne-websocket', () => {
         channels[channel].bind('newPost', data => {
           const id = String(data.discussionId);
           const params = app.discussions.getParams();
-          if (['user.posts', 'user.discussions'].indexOf(app.current.data.routeName) !== -1) {
+          if (['user.posts', 'user.discussions'].indexOf(app.current.data.routeName) !== -1 || app.session.user.preferences().disableAutoFresh == false) {
             return
           };
           if (!params.q) {
@@ -89,7 +91,6 @@ app.initializers.add('kyrne-websocket', () => {
                   });
                   
                   let found = ids.some(r=> tags_ids.includes(r));
-                  console.log(found);
                   if (found == false) {
                     return
                   };
@@ -140,17 +141,6 @@ app.initializers.add('kyrne-websocket', () => {
     });
   });
 
-  //Disable NewPost chanel when going outside from DiscussionList
-  extend(DiscussionList.prototype, 'onremove', function (vnode) {
-    app.pusher.then(object => {
-      const channels = object.channels;
-      Object.keys(channels).map((channel) => {
-        if (channels[channel] === null) return;
-        channels[channel].unbind('newPost');
-      });
-    });
-  });
-
   //Disable NewPost chanel when going outside from DiscussionPage
   extend(DiscussionPage.prototype, 'onremove', function () {
     app.pusher.then(object => {
@@ -171,9 +161,8 @@ app.initializers.add('kyrne-websocket', () => {
           unreadNotificationCount: app.session.user.unreadNotificationCount() + 1,
           newNotificationCount: app.session.user.newNotificationCount() + 1
         });
-        app.notifications.clear();
         m.redraw();
-
+        console.log(app.session.user.unreadNotificationCount());
         let element = document.querySelector(".MobileTab .item-notifications .unread");
         if (element) {
             element.innerHTML = app.session.user.unreadNotificationCount();
