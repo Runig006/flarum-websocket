@@ -64,7 +64,7 @@ app.initializers.add('kyrne-websocket', () => {
         channels[channel].bind('newPost', data => {
           const id = String(data.discussionId);
           const params = app.discussions.getParams();
-          if (['user.posts', 'user.discussions'].indexOf(app.current.data.routeName) !== -1 || app.session.user.preferences().disableAutoFresh == false) {
+          if (['user.posts', 'user.discussions'].indexOf(app.current.data.routeName) !== -1 || app.session.user.preferences().disableAutoFresh == true) {
             return
           };
           if (!params.q) {
