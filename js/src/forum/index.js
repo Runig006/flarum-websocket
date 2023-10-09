@@ -89,8 +89,8 @@ app.initializers.add('kyrne-websocket', () => {
                       tags_ids.push(tag.data.id);
                     }
                   });
-                  
-                  let found = ids.some(r=> tags_ids.includes(r));
+
+                  let found = ids.some(r => tags_ids.includes(r));
                   if (found == false) {
                     return
                   };
@@ -125,10 +125,11 @@ app.initializers.add('kyrne-websocket', () => {
         channels[channel].bind('newPost', data => {
           const id = String(data.discussionId);
           if (this.discussion && this.discussion.id() === id && this.stream) {
+            console.log(data);
             const oldCount = this.discussion.commentCount();
             app.store.find('discussions', this.discussion.id()).then(() => {
               this.stream.update().then(() => {
-                if (!document.hasFocus()) {
+                if (!document.hasFocus() && app.session.user.id != data.user_id) {
                   app.setTitleCount(Math.max(0, this.discussion.commentCount() - oldCount));
                   $(window).one('focus', () => app.setTitleCount(0));
                 }
@@ -165,7 +166,7 @@ app.initializers.add('kyrne-websocket', () => {
         console.log(app.session.user.unreadNotificationCount());
         let element = document.querySelector(".MobileTab .item-notifications .unread");
         if (element) {
-            element.innerHTML = app.session.user.unreadNotificationCount();
+          element.innerHTML = app.session.user.unreadNotificationCount();
         }
       });
     }
