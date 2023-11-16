@@ -125,7 +125,6 @@ app.initializers.add('kyrne-websocket', () => {
         channels[channel].bind('newPost', data => {
           const id = String(data.discussionId);
           if (this.discussion && this.discussion.id() === id && this.stream) {
-            console.log(data);
             const oldCount = this.discussion.commentCount();
             app.store.find('discussions', this.discussion.id()).then(() => {
               this.stream.update().then(() => {
@@ -163,7 +162,6 @@ app.initializers.add('kyrne-websocket', () => {
           newNotificationCount: app.session.user.newNotificationCount() + 1
         });
         m.redraw();
-        console.log(app.session.user.unreadNotificationCount());
         let element = document.querySelector(".MobileTab .item-notifications .unread");
         if (element) {
           element.innerHTML = app.session.user.unreadNotificationCount();

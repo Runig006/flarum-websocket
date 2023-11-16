@@ -59,11 +59,9 @@ function websocketProtocol() {
 function onOpen(evt) {
   $("#connect").hide();
   $("#disconnect").show();
-  console.log("Websocket connected");
 };
 
 function onClose(evt) {
-  console.log("Websocket closed");
   $("#connect").show();
   $("#disconnect").hide();
 };
